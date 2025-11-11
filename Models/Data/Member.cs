@@ -5,8 +5,8 @@
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Surname { get ; set; }
-        public string? Email { get; set; } // Точно ли он nullable?
-        public string? Specialization { get; set; } // А тут мб список строк, если у чел многозадачный?
+        public string? Email { get; set; } 
+        public string? Specialization { get; set; }
 
         public Guid UserId { get; set; }
         public User User { get; set; }
