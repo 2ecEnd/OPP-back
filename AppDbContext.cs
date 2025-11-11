@@ -13,6 +13,7 @@ namespace OPP_back
         public DbSet<Data.Task> Tasks { get; set; }
         public DbSet<Member> Members { get; set; }
         public DbSet<AssignedTask> AssignedTasks { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -54,6 +55,15 @@ namespace OPP_back
             modelBuilder.Entity<AssignedTask>(entity =>
             {
                 entity.HasKey(at => new { at.MemberId, at.TaskId });
+            });
+
+            modelBuilder.Entity<RefreshToken>(entity =>
+            {
+                entity.HasKey(rt => rt.Id);
+
+                entity.HasOne(rt => rt.User)
+                    .WithMany()
+                    .HasForeignKey(rt => rt.UserId);
             });
         }
     }
