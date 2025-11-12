@@ -3,7 +3,7 @@ using BC = BCrypt.Net.BCrypt;
 
 namespace OPP_back.Services
 {
-    public class PasswordHasherService : IPasswordHashService
+    public class PasswordHashService : IPasswordHashService
     {
         public string HashPassword(string password)
         {

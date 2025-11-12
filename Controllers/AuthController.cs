@@ -12,7 +12,7 @@ namespace OPP_back.Controllers
 
         public AuthController(AuthService authService)
         {
-            this.authService = authService;
+            _AuthService = authService;
         }
 
         [HttpPost("register")]
