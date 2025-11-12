@@ -27,13 +27,20 @@ namespace OPP_back.Controllers
             if (id == null)
                 return Conflict();
 
-            return Ok(id);
+            return Created();
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> LoginUser([FromBody] AuthRequest authData)
         {
-            return Ok();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var tokens = await _AuthService.LoginUser(authData.Email, authData.Password);
+            if (tokens == null)
+                return BadRequest();
+
+            return Created("", tokens);
         }
 
         [HttpPost("refresh")]

@@ -2,6 +2,7 @@
 using OPP_back.Models.Dto;
 using OPP_back.Models.Data;
 using OPP_back.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace OPP_back.Services
 {
@@ -41,7 +42,29 @@ namespace OPP_back.Services
 
         public async Task<TokensDto?> LoginUser(string email, string password)
         {
-            throw new NotImplementedException();
+            var user = await _DbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null ||
+                !_PasswordHasher.VerifyPassword(password, user.PasswordHash))
+                return null;
+
+            var tokens = new TokensDto
+            {
+                Access = _TokenService.GenerateAccessToken(user),
+                Refresh = _TokenService.GenerateRefreshToken()
+            };
+
+            await _DbContext.RefreshTokens.AddAsync(new RefreshToken
+            {
+                Id = Guid.NewGuid(),
+                Token = tokens.Refresh,
+                ExpiresAt = DateTime.UtcNow.AddHours(1),
+                IsValid = true,
+                UserId = user.Id,
+                User = user
+            });
+            await _DbContext.SaveChangesAsync();
+
+            return tokens;
         }
 
         public async Task<TokensDto?> RefreshTokens(string token)
