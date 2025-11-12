@@ -74,7 +74,13 @@ namespace OPP_back.Services
 
         public async Task<bool> LogoutUser(string token)
         {
-            throw new NotImplementedException();
+            var tokens = await _DbContext.RefreshTokens.FirstOrDefaultAsync(t => t.Token == token);
+
+            if (tokens == null) return false;
+            tokens.IsValid = false;
+
+            await _DbContext.SaveChangesAsync();
+            return true;
         }
     }
 }

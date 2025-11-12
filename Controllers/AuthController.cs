@@ -52,7 +52,14 @@ namespace OPP_back.Controllers
         [HttpPost("logout")]
         public async Task<IActionResult> LogoutUser([FromBody] RefreshTokenRequest token)
         {
-            return Ok();
+            if (await _AuthService.LogoutUser(token.Token))
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
     }
 }
