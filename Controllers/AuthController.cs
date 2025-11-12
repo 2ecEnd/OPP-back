@@ -1,16 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using OPP_back.Services;
 using OPP_back.Models.Requests;
+using OPP_back.Services;
+using OPP_back.Services.Interfaces;
 
 namespace OPP_back.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthController : Controller
+    public class AuthController : ControllerBase
     {
-        private readonly AuthService _AuthService;
+        private readonly IAuthService _AuthService;
 
-        public AuthController(AuthService authService)
+        public AuthController(IAuthService authService)
         {
             _AuthService = authService;
         }
@@ -18,7 +19,15 @@ namespace OPP_back.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] AuthRequest registerData)
         {
-            return Ok();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var id = await _AuthService.RegisterUser(registerData.Email, registerData.Password);
+
+            if (id == null)
+                return Conflict();
+
+            return Ok(id);
         }
 
         [HttpPost("login")]

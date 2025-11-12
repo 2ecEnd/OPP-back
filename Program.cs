@@ -43,8 +43,8 @@ builder.Services.AddControllers()
         options.DisableImplicitFromServicesParameters = true;
     });
 
-builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IPasswordHashService, PasswordHashService>();
+builder.Services.AddTransient<IAuthService, AuthService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
