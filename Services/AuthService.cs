@@ -69,17 +69,47 @@ namespace OPP_back.Services
 
         public async Task<TokensDto?> RefreshTokens(string token)
         {
-            throw new NotImplementedException();
+            var refToken = await _DbContext.RefreshTokens.FirstOrDefaultAsync(rt => rt.Token == token);
+            if (refToken == null ||
+                refToken.ExpiresAt < DateTime.UtcNow ||
+                !refToken.IsValid)
+                return null;
+
+            refToken.IsValid = false;
+            var user = await _DbContext.Users.FirstOrDefaultAsync(u => u.Id == refToken.UserId);
+
+            var tokens = new TokensDto
+            {
+                Access = _TokenService.GenerateAccessToken(user),
+                Refresh = _TokenService.GenerateRefreshToken()
+            };
+
+            await _DbContext.RefreshTokens.AddAsync(new RefreshToken
+            {
+                Id = Guid.NewGuid(),
+                Token = tokens.Refresh,
+                ExpiresAt = DateTime.UtcNow.AddHours(1),
+                IsValid = true,
+                UserId = user.Id,
+                User = user
+            });
+            await _DbContext.SaveChangesAsync();
+
+            return tokens;
         }
 
         public async Task<bool> LogoutUser(string token)
         {
-            var tokens = await _DbContext.RefreshTokens.FirstOrDefaultAsync(t => t.Token == token);
+            var refToken = await _DbContext.RefreshTokens.FirstOrDefaultAsync(t => t.Token == token);
 
-            if (tokens == null) return false;
-            tokens.IsValid = false;
+            if (refToken == null ||
+                refToken.ExpiresAt < DateTime.UtcNow ||
+                !refToken.IsValid) 
+                return false;
 
+            refToken.IsValid = false;
             await _DbContext.SaveChangesAsync();
+
             return true;
         }
     }

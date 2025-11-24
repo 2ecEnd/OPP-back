@@ -46,20 +46,20 @@ namespace OPP_back.Controllers
         [HttpPost("refresh")]
         public async Task<IActionResult> RefreshTokens([FromBody] RefreshTokenRequest token)
         {
-            return Ok();
+            var tokens = await _AuthService.RefreshTokens(token.Token);
+
+            if (tokens == null)
+                return Unauthorized();
+
+            return Ok(tokens);
         }
 
         [HttpPost("logout")]
         public async Task<IActionResult> LogoutUser([FromBody] RefreshTokenRequest token)
         {
             if (await _AuthService.LogoutUser(token.Token))
-            {
                 return Ok();
-            }
-            else
-            {
-                return BadRequest();
-            }
+            return Unauthorized();
         }
     }
 }
