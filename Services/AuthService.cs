@@ -114,9 +114,50 @@ namespace OPP_back.Services
             return true;
         }
 
-        public Task<UserDto?> GetUser(Guid id)
+        public async Task<UserDto?> GetUser(Guid id)
         {
-            throw new NotImplementedException();
+            var user =  await _DbContext.Users
+                .Include(u => u.Subjects)
+                    .ThenInclude(s => s.Tasks)
+                        .ThenInclude(t => t.AssignedTasks)
+                .Include(u => u.Members)
+                    .ThenInclude(m => m.AssignedTasks)
+                .Select(u => new UserDto
+                {
+                    Id = u.Id,
+                    Subjects = u.Subjects.Select(s => new SubjectDto
+                    {
+                        Id = s.Id,
+                        Name = s.Name,
+                        Tasks = s.Tasks.Select(t => new TaskDto
+                        {
+                            Id = t.Id,
+                            Title = t.Title,
+                            Description = t.Description,
+                            CreateTime = t.CreateTime,
+                            DeadLine = t.DeadLine,
+                            LeadTime = t.LeadTime,
+                            Status = t.Status.ToString(),
+                            PosX = t.PosX,
+                            PosY = t.PosY,
+                            SuperTaskId = t.SuperTaskId,
+                            SubTasks = t.SubTasks.Select(st => st.Id).ToList(),
+                            AssignedTasks = t.AssignedTasks.Select(at => at.MemberId).ToList()
+                        }).ToList()
+                    }).ToList(),
+                    Members = u.Members.Select(m => new MemberDto
+                    {
+                        Id = m.Id,
+                        Name = m.Name,
+                        Surname = m.Surname,
+                        Email = m.Email,
+                        Specialization = m.Specialization,
+                        AssignedTasks = m.AssignedTasks.Select(at => at.TaskId).ToList(),
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync(u => u.Id == id);
+
+            return user;
         }
     }
 }

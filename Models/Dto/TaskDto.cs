@@ -10,7 +10,10 @@ namespace OPP_back.Models.Dto
         public DateTime CreateTime { get; set; }
         public DateTime DeadLine { get; set; }
         public DateTime LeadTime { get; set; }
-        public Status Status { get; set; }
+        public string Status { get; set; }
+
+        public double PosX { get; set; }
+        public double PosY { get; set; }
 
         public Guid? SuperTaskId { get; set; }
         public List<Guid> SubTasks { get; set; }
