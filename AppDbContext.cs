@@ -45,6 +45,10 @@ namespace OPP_back
             modelBuilder.Entity<Data.Task>(entity =>
             {
                 entity.HasKey(t => t.Id);
+
+                entity.HasMany(t => t.SubTasks)
+                    .WithOne(t => t.SuperTask)
+                    .HasForeignKey(t => t.SuperTaskId);
             });
 
             modelBuilder.Entity<Member>(entity =>

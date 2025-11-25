@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace OPP_back.Models.Dto
+namespace OPP_back.Models.Dto.Responses
 {
-    public class TokensDto
+    public class TokensResponseDto
     {
         [JsonPropertyName("AccessToken")]
         public string Access { get; set; }

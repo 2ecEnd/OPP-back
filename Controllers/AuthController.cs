@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using OPP_back.Models.Requests;
+using OPP_back.Models.Dto.Requests;
 using OPP_back.Services;
 using OPP_back.Services.Interfaces;
 
@@ -60,6 +60,23 @@ namespace OPP_back.Controllers
             if (await _AuthService.LogoutUser(token.Token))
                 return Ok();
             return Unauthorized();
+        }
+
+        [HttpGet("me")]
+        public async Task<IActionResult> GetUser()
+        {
+            var sessionClaim = User.FindFirst("session");
+            if (sessionClaim == null)
+                return Unauthorized();
+
+            if (!Guid.TryParse(sessionClaim.Value, out var userId))
+                return Unauthorized();
+
+            var user = await _AuthService.GetUser(userId);
+            if (user == null)
+                return Unauthorized();
+
+            return Ok(user);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace OPP_back.Models.Requests
+namespace OPP_back.Models.Dto.Requests
 {
     public class RefreshTokenRequest
     {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OPP_back.Models.Dto;
 using OPP_back.Models.Data;
+using OPP_back.Models.Dto;
+using OPP_back.Models.Dto.Responses;
 using OPP_back.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
@@ -40,14 +41,14 @@ namespace OPP_back.Services
             return user.Id;
         }
 
-        public async Task<TokensDto?> LoginUser(string email, string password)
+        public async Task<TokensResponseDto?> LoginUser(string email, string password)
         {
             var user = await _DbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
             if (user == null ||
                 !_PasswordHasher.VerifyPassword(password, user.PasswordHash))
                 return null;
 
-            var tokens = new TokensDto
+            var tokens = new TokensResponseDto
             {
                 Access = _TokenService.GenerateAccessToken(user),
                 Refresh = _TokenService.GenerateRefreshToken()
@@ -67,7 +68,7 @@ namespace OPP_back.Services
             return tokens;
         }
 
-        public async Task<TokensDto?> RefreshTokens(string token)
+        public async Task<TokensResponseDto?> RefreshTokens(string token)
         {
             var refToken = await _DbContext.RefreshTokens.FirstOrDefaultAsync(rt => rt.Token == token);
             if (refToken == null ||
@@ -78,7 +79,7 @@ namespace OPP_back.Services
             refToken.IsValid = false;
             var user = await _DbContext.Users.FirstOrDefaultAsync(u => u.Id == refToken.UserId);
 
-            var tokens = new TokensDto
+            var tokens = new TokensResponseDto
             {
                 Access = _TokenService.GenerateAccessToken(user),
                 Refresh = _TokenService.GenerateRefreshToken()
@@ -111,6 +112,11 @@ namespace OPP_back.Services
             await _DbContext.SaveChangesAsync();
 
             return true;
+        }
+
+        public Task<UserDto?> GetUser(Guid id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

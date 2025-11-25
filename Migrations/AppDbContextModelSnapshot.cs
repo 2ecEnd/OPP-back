@@ -34,7 +34,7 @@ namespace OPP_back.Migrations
 
                     b.HasIndex("TaskId");
 
-                    b.ToTable("AssignedTasks");
+                    b.ToTable("AssignedTasks", (string)null);
                 });
 
             modelBuilder.Entity("OPP_back.Models.Data.Member", b =>
@@ -64,7 +64,7 @@ namespace OPP_back.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Members");
+                    b.ToTable("Members", (string)null);
                 });
 
             modelBuilder.Entity("OPP_back.Models.Data.RefreshToken", b =>
@@ -90,7 +90,7 @@ namespace OPP_back.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("OPP_back.Models.Data.Subject", b =>
@@ -110,7 +110,7 @@ namespace OPP_back.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Subjects");
+                    b.ToTable("Subjects", (string)null);
                 });
 
             modelBuilder.Entity("OPP_back.Models.Data.Task", b =>
@@ -151,7 +151,7 @@ namespace OPP_back.Migrations
 
                     b.HasIndex("SuperTaskId");
 
-                    b.ToTable("Tasks");
+                    b.ToTable("Tasks", (string)null);
                 });
 
             modelBuilder.Entity("OPP_back.Models.Data.User", b =>
@@ -170,7 +170,7 @@ namespace OPP_back.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("OPP_back.Models.Data.AssignedTask", b =>

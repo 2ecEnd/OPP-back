@@ -1,6 +1,8 @@
-﻿namespace OPP_back.Models.Data
+﻿using OPP_back.Models.Data;
+
+namespace OPP_back.Models.Dto
 {
-    public class Task
+    public class TaskDto
     {
         public Guid Id { get; set; }
         public string Title { get; set; }
@@ -11,10 +13,7 @@
         public Status Status { get; set; }
 
         public Guid? SuperTaskId { get; set; }
-        public Task? SuperTask { get; set; }
-        public List<Task> SubTasks { get; set; }
-        public Guid SubjectId { get; set; }
-        public Subject Subject { get; set; }
-        public List<AssignedTask> AssignedTasks { get; set; }
+        public List<Guid> SubTasks { get; set; }
+        public List<Guid> AssignedTasks { get; set; }
     }
 }
