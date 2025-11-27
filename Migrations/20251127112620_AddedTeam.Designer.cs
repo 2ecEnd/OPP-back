@@ -12,7 +12,7 @@ using OPP_back;
 namespace OPP_back.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251127061943_Added Team")]
+    [Migration("20251127112620_AddedTeam")]
     partial class AddedTeam
     {
         /// <inheritdoc />
@@ -181,7 +181,7 @@ namespace OPP_back.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Team");
+                    b.ToTable("Teams");
                 });
 
             modelBuilder.Entity("OPP_back.Models.Data.User", b =>

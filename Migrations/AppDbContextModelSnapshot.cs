@@ -178,7 +178,7 @@ namespace OPP_back.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Team");
+                    b.ToTable("Teams");
                 });
 
             modelBuilder.Entity("OPP_back.Models.Data.User", b =>

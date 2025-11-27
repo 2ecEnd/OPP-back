@@ -32,7 +32,7 @@ namespace OPP_back.Migrations
                 nullable: true);
 
             migrationBuilder.CreateTable(
-                name: "Team",
+                name: "Teams",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -40,9 +40,9 @@ namespace OPP_back.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Team", x => x.Id);
+                    table.PrimaryKey("PK_Teams", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Team_Users_UserId",
+                        name: "FK_Teams_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -55,23 +55,23 @@ namespace OPP_back.Migrations
                 column: "TeamId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Team_UserId",
-                table: "Team",
+                name: "IX_Teams_UserId",
+                table: "Teams",
                 column: "UserId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Members_Team_TeamId",
+                name: "FK_Members_Teams_TeamId",
                 table: "Members",
                 column: "TeamId",
-                principalTable: "Team",
+                principalTable: "Teams",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Subjects_Team_TeamId",
+                name: "FK_Subjects_Teams_TeamId",
                 table: "Subjects",
                 column: "TeamId",
-                principalTable: "Team",
+                principalTable: "Teams",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.SetNull);
         }
@@ -80,15 +80,15 @@ namespace OPP_back.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Members_Team_TeamId",
+                name: "FK_Members_Teams_TeamId",
                 table: "Members");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_Subjects_Team_TeamId",
+                name: "FK_Subjects_Teams_TeamId",
                 table: "Subjects");
 
             migrationBuilder.DropTable(
-                name: "Team");
+                name: "Teams");
 
             migrationBuilder.DropIndex(
                 name: "IX_Subjects_TeamId",
