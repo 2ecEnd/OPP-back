@@ -2,7 +2,7 @@
 
 namespace OPP_back.Models.Dto
 {
-    public class UserDto
+    public class TeamleadDto
     {
         public Guid Id { get; set; }
 

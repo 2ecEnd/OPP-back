@@ -20,7 +20,7 @@ namespace OPP_back.Services
         }
 
 
-        public string GenerateAccessToken(User user)
+        public string GenerateAccessToken(Teamlead user)
         {
             var claims = new List<Claim>
             { 

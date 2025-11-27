@@ -8,7 +8,7 @@ namespace OPP_back
     public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-        public DbSet<User> Users { get; set; }
+        public DbSet<Teamlead> Users { get; set; }
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<Data.Task> Tasks { get; set; }
         public DbSet<Member> Members { get; set; }
@@ -17,7 +17,7 @@ namespace OPP_back
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>(entity =>
+            modelBuilder.Entity<Teamlead>(entity =>
             {
                 entity.HasKey(u => u.Id);
 

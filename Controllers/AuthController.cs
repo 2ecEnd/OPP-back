@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using OPP_back.Models.Data;
 using OPP_back.Models.Dto.Requests;
 using OPP_back.Services;
 using OPP_back.Services.Interfaces;
@@ -63,7 +64,24 @@ namespace OPP_back.Controllers
         }
 
         [HttpGet("me")]
-        public async Task<IActionResult> GetUser()
+        public async Task<IActionResult> GetTeamLead()
+        {
+            var sessionClaim = User.FindFirst("session");
+            if (sessionClaim == null)
+                return Unauthorized();
+
+            if (!Guid.TryParse(sessionClaim.Value, out var userId))
+                return Unauthorized();
+
+            var user = await _AuthService.GetUser(userId);
+            if (user == null)
+                return Unauthorized();
+
+            return Ok(user);
+        }
+
+        [HttpPut("save")]
+        public async Task<IActionResult> ChangeTeamLead([FromBody] Teamlead teamlead)
         {
             var sessionClaim = User.FindFirst("session");
             if (sessionClaim == null)

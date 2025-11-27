@@ -28,7 +28,7 @@ namespace OPP_back.Services
             if (await _DbContext.Users.AnyAsync(u => u.Email == email))
                 return null;
 
-            var user = new User
+            var user = new Teamlead
             {
                 Id = Guid.NewGuid(),
                 Email = email,
@@ -114,7 +114,7 @@ namespace OPP_back.Services
             return true;
         }
 
-        public async Task<UserDto?> GetUser(Guid id)
+        public async Task<TeamleadDto?> GetUser(Guid id)
         {
             var user =  await _DbContext.Users
                 .Include(u => u.Subjects)
@@ -122,7 +122,7 @@ namespace OPP_back.Services
                         .ThenInclude(t => t.AssignedTasks)
                 .Include(u => u.Members)
                     .ThenInclude(m => m.AssignedTasks)
-                .Select(u => new UserDto
+                .Select(u => new TeamleadDto
                 {
                     Id = u.Id,
                     Subjects = u.Subjects.Select(s => new SubjectDto

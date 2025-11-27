@@ -1,6 +1,6 @@
 ﻿namespace OPP_back.Models.Data
 {
-    public class User
+    public class Teamlead
     {
         public Guid Id { get; set; }
         public string Email { get; set; }
