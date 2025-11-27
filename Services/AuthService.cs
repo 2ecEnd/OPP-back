@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using OPP_back.Models.Data;
 using OPP_back.Models.Dto;
 using OPP_back.Models.Dto.Responses;
 using OPP_back.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OPP_back.Services
 {
@@ -166,6 +167,7 @@ namespace OPP_back.Services
 
             return null;
         }
+
         public async Task<bool> ChangeUser(UserDto data)
         {
             var user = await _DbContext.Users.FirstOrDefaultAsync(u => u.Id == data.Id);
@@ -175,9 +177,20 @@ namespace OPP_back.Services
             _DbContext.Subjects.RemoveRange(user.Subjects);
             _DbContext.Teams.RemoveRange(user.Teams);
 
+            var teams = DtoToData_Teams(data.Teams, user);
+            var subjects = DtoToData_Subjects(data.Subjects, teams, user);
+            var assignedTasks = DtoToData_AssignedTasks(data.Teams, teams, subjects);
 
-            //-=-=-=-Получение команд и их участников-=-=-=-
-            var teams = data.Teams.Select(tm => new Team
+            user.Teams = teams;
+            user.Subjects = subjects;
+            await _DbContext.AssignedTasks.AddRangeAsync(assignedTasks);
+
+            return true;
+        }
+
+        private List<Team> DtoToData_Teams(List<TeamDto> teamsDto, User user)
+        {
+            var teams = teamsDto.Select(tm => new Team
             {
                 Id = tm.Id,
                 UserId = user.Id,
@@ -186,9 +199,9 @@ namespace OPP_back.Services
                 Members = new List<Member>()
             }).ToList();
 
-            for (int i = 0; i < data.Teams.Count; i++)
+            for (int i = 0; i < teamsDto.Count; i++)
             {
-                var teamDto = data.Teams[i];
+                var teamDto = teamsDto[i];
 
                 teams[i].Members.AddRange(teamDto.Members.Select(m => new Member
                 {
@@ -203,9 +216,12 @@ namespace OPP_back.Services
                 }));
             }
 
+            return teams;
+        }
 
-            //-=-=-=-Получение предметов и их задач-=-=-=-
-            var subjects = data.Subjects.Select(s => new Subject
+        private List<Subject> DtoToData_Subjects(List<SubjectDto> subjectsDto, List<Team> teams, User user)
+        {
+            var subjects = subjectsDto.Select(s => new Subject
             {
                 Id = s.Id,
                 Name = s.Name,
@@ -216,9 +232,9 @@ namespace OPP_back.Services
                 Tasks = new List<Models.Data.Task>()
             }).ToList();
 
-            for (int i = 0; i < data.Subjects.Count; i++)
+            for (int i = 0; i < subjectsDto.Count; i++)
             {
-                var subjectDto = data.Subjects[i];
+                var subjectDto = subjectsDto[i];
 
                 subjects[i].Tasks.AddRange(subjectDto.Tasks.Select(t => new Models.Data.Task
                 {
@@ -228,7 +244,7 @@ namespace OPP_back.Services
                     CreateTime = t.CreateTime,
                     DeadLine = t.DeadLine,
                     LeadTime = t.LeadTime,
-                    Status = t.Status.ToLower() == "done" ? 
+                    Status = t.Status.ToLower() == "done" ?
                         Status.Done :
                         t.Status.ToLower() == "inprocess" ?
                             Status.InProcess :
@@ -253,12 +269,16 @@ namespace OPP_back.Services
                 }
             }
 
-
-            //-=-=-=-Добавление назначений человека на задачу-=-=-=-
+            return subjects;
+        }
+        
+        private List<AssignedTask> DtoToData_AssignedTasks(List<TeamDto> teamsDto, List<Team> teams, List<Subject> subjects)
+        {
             var assignedTasks = new List<AssignedTask>();
-            for (int i = 0; i < data.Teams.Count; i++)
+
+            for (int i = 0; i < teamsDto.Count; i++)
             {
-                var teamDto = data.Teams[i];
+                var teamDto = teamsDto[i];
                 for (int j = 0; j < teamDto.Members.Count; j++)
                 {
                     var memberDto = teamDto.Members[j];
@@ -270,27 +290,10 @@ namespace OPP_back.Services
                         TaskId = at,
                         Task = subjects[i].Tasks.First(tk => tk.Id == at)
                     }));
-
-                    /*for (int k = 0; k < memberDto.AssignedTasks.Count; k++)
-                    {
-                        var assignedTaskDto = memberDto.AssignedTasks[k];
-
-                        assignedTasks.Add(new AssignedTask
-                        {
-                            MemberId = memberDto.Id,
-                            Member = teams[i].Members.First(m => m.Id == memberDto.Id),
-                            TaskId = assignedTaskDto,
-                            Task = subjects[i].Tasks.First(tk => tk.Id == assignedTaskDto)
-                        });
-                    }*/
                 }
             }
 
-            user.Teams = teams;
-            user.Subjects = subjects;
-            await _DbContext.AssignedTasks.AddRangeAsync(assignedTasks);
-
-            return true;
+            return assignedTasks;
         }
     }
 }
