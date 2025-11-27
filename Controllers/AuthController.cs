@@ -82,7 +82,7 @@ namespace OPP_back.Controllers
         }
 
         [HttpPut("save")]
-        public async Task<IActionResult> ChangeUser([FromBody] UserDto teamlead)
+        public async Task<IActionResult> ChangeUser([FromBody] UserDto user)
         {
             var sessionClaim = User.FindFirst("session");
             if (sessionClaim == null)
@@ -91,11 +91,10 @@ namespace OPP_back.Controllers
             if (!Guid.TryParse(sessionClaim.Value, out var userId))
                 return Unauthorized();
 
-            var user = await _AuthService.GetUser(userId);
-            if (user == null)
+            if (!await _AuthService.ChangeUser(user))
                 return Unauthorized();
 
-            return Ok(user);
+            return Ok();
         }
     }
 }

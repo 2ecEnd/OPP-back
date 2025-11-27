@@ -11,6 +11,7 @@ namespace OPP_back
         public DbSet<User> Users { get; set; }
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<Data.Task> Tasks { get; set; }
+        public DbSet<Team> Teams { get; set; }
         public DbSet<Member> Members { get; set; }
         public DbSet<AssignedTask> AssignedTasks { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
@@ -63,11 +64,11 @@ namespace OPP_back
 
             modelBuilder.Entity<Data.Task>(entity =>
             {
-                entity.HasKey(t => t.Id);
+                entity.HasKey(tk => tk.Id);
 
-                entity.HasMany(t => t.SubTasks)
-                    .WithOne(t => t.SuperTask)
-                    .HasForeignKey(t => t.SuperTaskId);
+                entity.HasMany(tk => tk.SubTasks)
+                    .WithOne(tk => tk.SuperTask)
+                    .HasForeignKey(tk => tk.SuperTaskId);
             });
 
             modelBuilder.Entity<Member>(entity =>
@@ -78,6 +79,18 @@ namespace OPP_back
             modelBuilder.Entity<AssignedTask>(entity =>
             {
                 entity.HasKey(at => new { at.MemberId, at.TaskId });
+
+                entity.HasOne(at => at.Member)
+                    .WithMany(m => m.AssignedTasks)
+                    .HasForeignKey(at => at.MemberId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(at => at.Task)
+                    .WithMany(tk => tk.AssignedTasks)
+                    .HasForeignKey(at => at.TaskId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<RefreshToken>(entity =>

@@ -116,7 +116,7 @@ namespace OPP_back.Services
 
         public async Task<UserDto?> GetUser(Guid id)
         {
-            var user =  await _DbContext.Users
+            var user = await _DbContext.Users
                 .Include(u => u.Subjects)
                     .ThenInclude(s => s.Tasks)
                         .ThenInclude(tk => tk.AssignedTasks)
@@ -166,9 +166,131 @@ namespace OPP_back.Services
 
             return null;
         }
-        public async Task<bool> ChangeUser(UserDto teamlead)
+        public async Task<bool> ChangeUser(UserDto data)
         {
-            return false;
+            var user = await _DbContext.Users.FirstOrDefaultAsync(u => u.Id == data.Id);
+            if (user == null)
+                return false;
+
+            _DbContext.Subjects.RemoveRange(user.Subjects);
+            _DbContext.Teams.RemoveRange(user.Teams);
+
+
+            //-=-=-=-Получение команд и их участников-=-=-=-
+            var teams = data.Teams.Select(tm => new Team
+            {
+                Id = tm.Id,
+                UserId = user.Id,
+                User = user,
+                Subjects = new List<Subject>(),
+                Members = new List<Member>()
+            }).ToList();
+
+            for (int i = 0; i < data.Teams.Count; i++)
+            {
+                var teamDto = data.Teams[i];
+
+                teams[i].Members.AddRange(teamDto.Members.Select(m => new Member
+                {
+                    Id = m.Id,
+                    Name = m.Name,
+                    Surname = m.Surname,
+                    Email = m.Email,
+                    Specialization = m.Specialization,
+                    TeamId = teams[i].Id,
+                    Team = teams[i],
+                    AssignedTasks = new List<AssignedTask>()
+                }));
+            }
+
+
+            //-=-=-=-Получение предметов и их задач-=-=-=-
+            var subjects = data.Subjects.Select(s => new Subject
+            {
+                Id = s.Id,
+                Name = s.Name,
+                TeamId = s.TeamId,
+                Team = teams.FirstOrDefault(t => t.Id == s.TeamId),
+                UserId = user.Id,
+                User = user,
+                Tasks = new List<Models.Data.Task>()
+            }).ToList();
+
+            for (int i = 0; i < data.Subjects.Count; i++)
+            {
+                var subjectDto = data.Subjects[i];
+
+                subjects[i].Tasks.AddRange(subjectDto.Tasks.Select(t => new Models.Data.Task
+                {
+                    Id = t.Id,
+                    Title = t.Title,
+                    Description = t.Description,
+                    CreateTime = t.CreateTime,
+                    DeadLine = t.DeadLine,
+                    LeadTime = t.LeadTime,
+                    Status = t.Status.ToLower() == "done" ? 
+                        Status.Done :
+                        t.Status.ToLower() == "inprocess" ?
+                            Status.InProcess :
+                            Status.DontStarted,
+                    PosX = t.PosX,
+                    PosY = t.PosY,
+                    SuperTaskId = t.SuperTaskId,
+                    SuperTask = null,
+                    SubTasks = new List<Models.Data.Task>(),
+                    AssignedTasks = new List<AssignedTask>()
+                }));
+
+                for (int j = 0; j < subjects[i].Tasks.Count; j++)
+                {
+                    var task = subjects[i].Tasks[j];
+
+                    if (task.SuperTaskId != null)
+                    {
+                        task.SuperTask = subjects[i].Tasks.First(t => t.Id == task.SuperTaskId);
+                        task.SuperTask.SubTasks.Add(task);
+                    }
+                }
+            }
+
+
+            //-=-=-=-Добавление назначений человека на задачу-=-=-=-
+            var assignedTasks = new List<AssignedTask>();
+            for (int i = 0; i < data.Teams.Count; i++)
+            {
+                var teamDto = data.Teams[i];
+                for (int j = 0; j < teamDto.Members.Count; j++)
+                {
+                    var memberDto = teamDto.Members[j];
+
+                    assignedTasks.AddRange(memberDto.AssignedTasks.Select(at => new AssignedTask
+                    {
+                        MemberId = memberDto.Id,
+                        Member = teams[i].Members.First(m => m.Id == memberDto.Id),
+                        TaskId = at,
+                        Task = subjects[i].Tasks.First(tk => tk.Id == at)
+                    }));
+
+                    /*for (int k = 0; k < memberDto.AssignedTasks.Count; k++)
+                    {
+                        var assignedTaskDto = memberDto.AssignedTasks[k];
+
+                        assignedTasks.Add(new AssignedTask
+                        {
+                            MemberId = memberDto.Id,
+                            Member = teams[i].Members.First(m => m.Id == memberDto.Id),
+                            TaskId = assignedTaskDto,
+                            Task = subjects[i].Tasks.First(tk => tk.Id == assignedTaskDto)
+                        });
+                    }*/
+                }
+            }
+
+            user.Teams = teams;
+            user.Subjects = subjects;
+            await _DbContext.AssignedTasks.AddRangeAsync(assignedTasks);
+
+            return true;
         }
     }
 }

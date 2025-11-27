@@ -11,6 +11,6 @@ namespace OPP_back.Services.Interfaces
         public Task<TokensResponseDto?> RefreshTokens(string token);
         public Task<bool> LogoutUser(string token);
         public Task<UserDto?> GetUser(Guid id);
-        public Task<bool> ChangeUser(UserDto teamlead);
+        public Task<bool> ChangeUser(UserDto data);
     }
 }
