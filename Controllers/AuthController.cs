@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OPP_back.Models.Data;
+using OPP_back.Models.Dto;
 using OPP_back.Models.Dto.Requests;
 using OPP_back.Services;
 using OPP_back.Services.Interfaces;
@@ -64,7 +65,7 @@ namespace OPP_back.Controllers
         }
 
         [HttpGet("me")]
-        public async Task<IActionResult> GetTeamLead()
+        public async Task<IActionResult> GetUser()
         {
             var sessionClaim = User.FindFirst("session");
             if (sessionClaim == null)
@@ -81,7 +82,7 @@ namespace OPP_back.Controllers
         }
 
         [HttpPut("save")]
-        public async Task<IActionResult> ChangeTeamLead([FromBody] Teamlead teamlead)
+        public async Task<IActionResult> ChangeUser([FromBody] UserDto teamlead)
         {
             var sessionClaim = User.FindFirst("session");
             if (sessionClaim == null)

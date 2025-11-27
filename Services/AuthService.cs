@@ -28,7 +28,7 @@ namespace OPP_back.Services
             if (await _DbContext.Users.AnyAsync(u => u.Email == email))
                 return null;
 
-            var user = new Teamlead
+            var user = new User
             {
                 Id = Guid.NewGuid(),
                 Email = email,
@@ -114,15 +114,15 @@ namespace OPP_back.Services
             return true;
         }
 
-        public async Task<TeamleadDto?> GetUser(Guid id)
+        public async Task<UserDto?> GetUser(Guid id)
         {
-            var user =  await _DbContext.Users
+            /*var user =  await _DbContext.Users
                 .Include(u => u.Subjects)
                     .ThenInclude(s => s.Tasks)
                         .ThenInclude(t => t.AssignedTasks)
                 .Include(u => u.Members)
                     .ThenInclude(m => m.AssignedTasks)
-                .Select(u => new TeamleadDto
+                .Select(u => new UserDto
                 {
                     Id = u.Id,
                     Subjects = u.Subjects.Select(s => new SubjectDto
@@ -155,9 +155,13 @@ namespace OPP_back.Services
                         AssignedTasks = m.AssignedTasks.Select(at => at.TaskId).ToList(),
                     }).ToList()
                 })
-                .FirstOrDefaultAsync(u => u.Id == id);
+                .FirstOrDefaultAsync(u => u.Id == id);*/
 
-            return user;
+            return null;
+        }
+        public async Task<bool> ChangeUser(UserDto teamlead)
+        {
+            return false;
         }
     }
 }

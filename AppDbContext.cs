@@ -8,7 +8,7 @@ namespace OPP_back
     public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-        public DbSet<Teamlead> Users { get; set; }
+        public DbSet<User> Users { get; set; }
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<Data.Task> Tasks { get; set; }
         public DbSet<Member> Members { get; set; }
@@ -17,19 +17,37 @@ namespace OPP_back
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Teamlead>(entity =>
+            modelBuilder.Entity<User>(entity =>
             {
                 entity.HasKey(u => u.Id);
 
                 entity.HasMany(u => u.Subjects)
                     .WithOne(s => s.User)
                     .HasForeignKey(u => u.UserId)
+                    .IsRequired()
                     .OnDelete(DeleteBehavior.Cascade);
 
-                entity.HasMany(u => u.Members)
-                    .WithOne(m => m.User)
-                    .HasForeignKey(m => m.UserId)
+                entity.HasMany(u => u.Teams)
+                    .WithOne(t => t.User)
+                    .HasForeignKey(t => t.UserId)
+                    .IsRequired()
                     .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<Team>(entity =>
+            {
+                entity.HasKey(t => t.Id);
+
+                entity.HasMany(t => t.Members)
+                    .WithOne(m => m.Team)
+                    .HasForeignKey(t => t.TeamId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasMany(t => t.Subjects)
+                    .WithOne(s => s.Team)
+                    .HasForeignKey(t => t.TeamId)
+                    .OnDelete(DeleteBehavior.SetNull);
             });
 
             modelBuilder.Entity<Subject>(entity =>
@@ -39,6 +57,7 @@ namespace OPP_back
                 entity.HasMany(s => s.Tasks)
                     .WithOne(t => t.Subject)
                     .HasForeignKey(t => t.SubjectId)
+                    .IsRequired()
                     .OnDelete(DeleteBehavior.Cascade);
             });
 

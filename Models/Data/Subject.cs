@@ -5,8 +5,10 @@
         public Guid Id { get; set; }
         public string Name { get; set; }
 
+        public Guid? TeamId { get; set; }
+        public Team? Team { get; set; }
         public Guid UserId { get; set; }
-        public Teamlead User { get; set; }
+        public User User { get; set; }
         public List<Task> Tasks { get; set; }
     }
 }
