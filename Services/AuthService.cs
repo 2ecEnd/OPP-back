@@ -201,9 +201,7 @@ namespace OPP_back.Services
 
             for (int i = 0; i < teamsDto.Count; i++)
             {
-                var teamDto = teamsDto[i];
-
-                teams[i].Members.AddRange(teamDto.Members.Select(m => new Member
+                teams[i].Members.AddRange(teamsDto[i].Members.Select(m => new Member
                 {
                     Id = m.Id,
                     Name = m.Name,
@@ -234,9 +232,7 @@ namespace OPP_back.Services
 
             for (int i = 0; i < subjectsDto.Count; i++)
             {
-                var subjectDto = subjectsDto[i];
-
-                subjects[i].Tasks.AddRange(subjectDto.Tasks.Select(t => new Models.Data.Task
+                subjects[i].Tasks.AddRange(subjectsDto[i].Tasks.Select(t => new Models.Data.Task
                 {
                     Id = t.Id,
                     Title = t.Title,
@@ -277,11 +273,9 @@ namespace OPP_back.Services
             var assignedTasks = new List<AssignedTask>();
 
             for (int i = 0; i < teamsDto.Count; i++)
-            {
-                var teamDto = teamsDto[i];
-                for (int j = 0; j < teamDto.Members.Count; j++)
+                for (int j = 0; j < teamsDto[i].Members.Count; j++)
                 {
-                    var memberDto = teamDto.Members[j];
+                    var memberDto = teamsDto[i].Members[j];
 
                     assignedTasks.AddRange(memberDto.AssignedTasks.Select(at => new AssignedTask
                     {
@@ -291,7 +285,6 @@ namespace OPP_back.Services
                         Task = subjects[i].Tasks.First(tk => tk.Id == at)
                     }));
                 }
-            }
 
             return assignedTasks;
         }
