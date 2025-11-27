@@ -116,12 +116,13 @@ namespace OPP_back.Services
 
         public async Task<UserDto?> GetUser(Guid id)
         {
-            /*var user =  await _DbContext.Users
+            var user =  await _DbContext.Users
                 .Include(u => u.Subjects)
                     .ThenInclude(s => s.Tasks)
-                        .ThenInclude(t => t.AssignedTasks)
-                .Include(u => u.Members)
-                    .ThenInclude(m => m.AssignedTasks)
+                        .ThenInclude(tk => tk.AssignedTasks)
+                .Include(u => u.Teams)
+                    .ThenInclude(tm => tm.Members)
+                        .ThenInclude(m => m.AssignedTasks)
                 .Select(u => new UserDto
                 {
                     Id = u.Id,
@@ -129,6 +130,7 @@ namespace OPP_back.Services
                     {
                         Id = s.Id,
                         Name = s.Name,
+                        TeamId = s.TeamId,
                         Tasks = s.Tasks.Select(t => new TaskDto
                         {
                             Id = t.Id,
@@ -145,17 +147,22 @@ namespace OPP_back.Services
                             AssignedTasks = t.AssignedTasks.Select(at => at.MemberId).ToList()
                         }).ToList()
                     }).ToList(),
-                    Members = u.Members.Select(m => new MemberDto
+                    Teams = u.Teams.Select(tm => new TeamDto
                     {
-                        Id = m.Id,
-                        Name = m.Name,
-                        Surname = m.Surname,
-                        Email = m.Email,
-                        Specialization = m.Specialization,
-                        AssignedTasks = m.AssignedTasks.Select(at => at.TaskId).ToList(),
+                        Id = tm.Id,
+                        Subjects = u.Subjects.Select(s => s.Id).ToList(),
+                        Members = tm.Members.Select(m => new MemberDto
+                        {
+                            Id = m.Id,
+                            Name = m.Name,
+                            Surname = m.Surname,
+                            Email = m.Email,
+                            Specialization = m.Specialization,
+                            AssignedTasks = m.AssignedTasks.Select(at => at.TaskId).ToList(),
+                        }).ToList()
                     }).ToList()
                 })
-                .FirstOrDefaultAsync(u => u.Id == id);*/
+                .FirstOrDefaultAsync(u => u.Id == id);
 
             return null;
         }
