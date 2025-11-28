@@ -33,7 +33,9 @@ namespace OPP_back.Services
             {
                 Id = Guid.NewGuid(),
                 Email = email,
-                PasswordHash = _PasswordHasher.HashPassword(password)
+                PasswordHash = _PasswordHasher.HashPassword(password),
+                Subjects = [],
+                Teams = []
             };
 
             await _DbContext.Users.AddAsync(user);
@@ -171,7 +173,14 @@ namespace OPP_back.Services
 
         public async Task<bool> ChangeUser(UserDto data)
         {
-            var user = await _DbContext.Users.FirstOrDefaultAsync(u => u.Id == data.Id);
+            var user = await _DbContext.Users
+                .Include(u => u.Subjects)
+                    .ThenInclude(s => s.Tasks)
+                        .ThenInclude(tk => tk.AssignedTasks)
+                .Include(u => u.Teams)
+                    .ThenInclude(tm => tm.Members)
+                        .ThenInclude(m => m.AssignedTasks)
+                .FirstOrDefaultAsync(u => u.Id == data.Id);
             if (user == null)
                 return false;
 
