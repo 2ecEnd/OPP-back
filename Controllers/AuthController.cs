@@ -84,12 +84,12 @@ namespace OPP_back.Controllers
         [HttpPut("save")]
         public async Task<IActionResult> ChangeUser([FromBody] UserDto user)
         {
-            var sessionClaim = User.FindFirst("session");
+            /*var sessionClaim = User.FindFirst("session");
             if (sessionClaim == null)
-                return Unauthorized();
+                return Unauthorized();*/
 
-            if (!Guid.TryParse(sessionClaim.Value, out var userId))
-                return Unauthorized();
+            /*if (!Guid.TryParse(sessionClaim.Value, out var userId))
+                return Unauthorized();*/
 
             if (!await _AuthService.ChangeUser(user))
                 return Unauthorized();
