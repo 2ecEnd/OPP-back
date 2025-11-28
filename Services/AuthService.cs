@@ -194,6 +194,7 @@ namespace OPP_back.Services
             user.Teams = teams;
             user.Subjects = subjects;
             await _DbContext.AssignedTasks.AddRangeAsync(assignedTasks);
+            await _DbContext.SaveChangesAsync();
 
             return true;
         }
