@@ -151,6 +151,7 @@ namespace OPP_back.Services
                     Teams = u.Teams.Select(tm => new TeamDto
                     {
                         Id = tm.Id,
+                        Name= tm.Name,
                         Subjects = u.Subjects.Select(s => s.Id).ToList(),
                         Members = tm.Members.Select(m => new MemberDto
                         {
@@ -193,6 +194,7 @@ namespace OPP_back.Services
             var teams = teamsDto.Select(tm => new Team
             {
                 Id = tm.Id,
+                Name = tm.Name,
                 UserId = user.Id,
                 User = user,
                 Subjects = new List<Subject>(),
