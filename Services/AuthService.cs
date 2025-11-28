@@ -166,7 +166,7 @@ namespace OPP_back.Services
                 })
                 .FirstOrDefaultAsync(u => u.Id == id);
 
-            return null;
+            return user;
         }
 
         public async Task<bool> ChangeUser(UserDto data)
