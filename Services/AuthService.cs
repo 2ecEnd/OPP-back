@@ -195,7 +195,11 @@ namespace OPP_back.Services
             var assignedTasks = DtoToData_AssignedTasks(data.Teams, teams, subjects);
 
             user.Teams = teams;
+            await _DbContext.Teams.AddRangeAsync(teams);
+
             user.Subjects = subjects;
+            await _DbContext.Subjects.AddRangeAsync(subjects);
+
             await _DbContext.AssignedTasks.AddRangeAsync(assignedTasks);
             await _DbContext.SaveChangesAsync();
 
