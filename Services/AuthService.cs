@@ -186,6 +186,9 @@ namespace OPP_back.Services
 
             _DbContext.Subjects.RemoveRange(user.Subjects);
             _DbContext.Teams.RemoveRange(user.Teams);
+            user.Teams = new List<Team>();
+            user.Subjects = new List<Subject>();
+            await _DbContext.SaveChangesAsync();
 
             var teams = DtoToData_Teams(data.Teams, user);
             var subjects = DtoToData_Subjects(data.Subjects, teams, user);
