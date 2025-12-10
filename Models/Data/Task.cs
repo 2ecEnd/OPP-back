@@ -6,8 +6,8 @@
         public string Title { get; set; }
         public string Description { get; set; }
         public DateTime CreateTime { get; set; }
-        public DateTime DeadLine { get; set; }
-        public DateTime LeadTime { get; set; }
+        public DateTime? DeadLine { get; set; }
+        public DateTime? LeadTime { get; set; }
         public Status Status { get; set; }
 
         public double PosX { get; set; }
