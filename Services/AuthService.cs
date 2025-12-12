@@ -14,6 +14,8 @@ namespace OPP_back.Services
         private readonly IPasswordHashService _PasswordHasher;
         private readonly TokenService _TokenService;
 
+        static int cnt = 0;
+
         public AuthService(
             AppDbContext DbContext,
             IPasswordHashService PasswordHasher,
@@ -184,6 +186,12 @@ namespace OPP_back.Services
             if (user == null)
                 return false;
 
+            cnt++;
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine(cnt);
+            Console.WriteLine();
+            Console.WriteLine();
             _DbContext.Subjects.RemoveRange(user.Subjects);
             _DbContext.Teams.RemoveRange(user.Teams);
             user.Teams = new List<Team>();

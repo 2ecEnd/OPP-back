@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using OPP_back.Models.Data;
 using OPP_back.Models.Dto;
 using OPP_back.Models.Dto.Requests;
@@ -82,6 +83,7 @@ namespace OPP_back.Controllers
         }
 
         [HttpPut("save")]
+        [EnableRateLimiting("RateLimit")]
         public async Task<IActionResult> ChangeUser([FromBody] UserDto user)
         {
             var a = 10;
