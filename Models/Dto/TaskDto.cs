@@ -25,8 +25,6 @@ namespace OPP_back.Models.Dto
         [JsonPropertyName("PosY")]
         public double PosY { get; set; }
 
-        [JsonPropertyName("SuperTaskId")]
-        public Guid? SuperTaskId { get; set; }
         [JsonPropertyName("SubTasks")]
         public List<Guid> SubTasks { get; set; }
         [JsonPropertyName("AssignedTasks")]

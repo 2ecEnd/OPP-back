@@ -4,6 +4,7 @@ using OPP_back.Models.Data;
 using OPP_back.Models.Dto;
 using OPP_back.Models.Dto.Responses;
 using OPP_back.Services.Interfaces;
+using System.Collections.Specialized;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OPP_back.Services
@@ -147,7 +148,6 @@ namespace OPP_back.Services
                             Status = t.Status.ToString(),
                             PosX = t.PosX,
                             PosY = t.PosY,
-                            SuperTaskId = t.SuperTaskId,
                             SubTasks = t.SubTasks.Select(st => st.Id).ToList(),
                             AssignedTasks = t.AssignedTasks.Select(at => at.MemberId).ToList()
                         }).ToList()
@@ -186,12 +186,6 @@ namespace OPP_back.Services
             if (user == null)
                 return false;
 
-            cnt++;
-            Console.WriteLine();
-            Console.WriteLine();
-            Console.WriteLine(cnt);
-            Console.WriteLine();
-            Console.WriteLine();
             _DbContext.Subjects.RemoveRange(user.Subjects);
             _DbContext.Teams.RemoveRange(user.Teams);
             user.Teams = new List<Team>();
@@ -274,22 +268,21 @@ namespace OPP_back.Services
                             Status.DontStarted,
                     PosX = t.PosX,
                     PosY = t.PosY,
-                    SuperTaskId = t.SuperTaskId,
-                    SuperTask = null,
-                    SubTasks = new List<Models.Data.Task>(),
+                    SubTasks = t.SubTasks.Select(st => _DbContext.Tasks.First(tk => tk.Id == st)).ToList(),
                     AssignedTasks = new List<AssignedTask>()
                 }));
 
-                for (int j = 0; j < subjects[i].Tasks.Count; j++)
+                /*for (int j = 0; j < subjects[i].Tasks.Count; j++)
                 {
                     var task = subjects[i].Tasks[j];
 
-                    if (task.SuperTaskId != null)
+                    for (int k = 0; k < subjectsDto[i].Tasks[j].SubTasks.Count; k++)
                     {
-                        task.SuperTask = subjects[i].Tasks.First(t => t.Id == task.SuperTaskId);
-                        task.SuperTask.SubTasks.Add(task);
+                        var taskDto = subjectsDto[i].Tasks[j].SubTasks[k];
+
+                        task.SubTasks.Add(_DbContext.Tasks.First(tk => tk.Id == taskDto));
                     }
-                }
+                }*/
             }
 
             return subjects;

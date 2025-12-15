@@ -13,8 +13,6 @@
         public double PosX { get; set; }
         public double PosY { get; set; }
 
-        public Guid? SuperTaskId { get; set; }
-        public Task? SuperTask { get; set; }
         public List<Task> SubTasks { get; set; }
         public Guid SubjectId { get; set; }
         public Subject Subject { get; set; }
