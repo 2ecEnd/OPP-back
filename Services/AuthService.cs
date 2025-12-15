@@ -268,11 +268,11 @@ namespace OPP_back.Services
                             Status.DontStarted,
                     PosX = t.PosX,
                     PosY = t.PosY,
-                    SubTasks = t.SubTasks.Select(st => _DbContext.Tasks.First(tk => tk.Id == st)).ToList(),
+                    SubTasks = new List<Models.Data.Task>(),
                     AssignedTasks = new List<AssignedTask>()
                 }));
 
-                /*for (int j = 0; j < subjects[i].Tasks.Count; j++)
+                for (int j = 0; j < subjects[i].Tasks.Count; j++)
                 {
                     var task = subjects[i].Tasks[j];
 
@@ -280,9 +280,9 @@ namespace OPP_back.Services
                     {
                         var taskDto = subjectsDto[i].Tasks[j].SubTasks[k];
 
-                        task.SubTasks.Add(_DbContext.Tasks.First(tk => tk.Id == taskDto));
+                        task.SubTasks.Add(subjects[i].Tasks.First(tk => tk.Id == taskDto));
                     }
-                }*/
+                }
             }
 
             return subjects;
