@@ -1,8 +1,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-COPY ["OPP-backcsproj", "."]
-RUN dotnet restore "OPP-backt.csproj"
+COPY ["OPP-back.csproj", "."]
+RUN dotnet restore "OPP-back.csproj"
 
 COPY . .
 RUN dotnet publish "OPP-back.csproj" -c Release -o /app/publish
