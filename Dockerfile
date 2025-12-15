@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 COPY ["OPP-back.csproj", "."]
@@ -7,7 +7,7 @@ RUN dotnet restore "OPP-back.csproj"
 COPY . .
 RUN dotnet publish "OPP-back.csproj" -c Release -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .
 
