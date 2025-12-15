@@ -45,6 +45,17 @@ builder.Services.AddControllers()
         options.DisableImplicitFromServicesParameters = true;
     });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy.AllowAnyOrigin()    // Разрешить все источники
+                  .AllowAnyMethod()    // Разрешить все HTTP-методы
+                  .AllowAnyHeader();   // Разрешить все заголовки
+        });
+});
+
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = 429;
@@ -77,7 +88,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors(policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+app.UseRouting();
+
+app.UseCors("AllowAll");
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
