@@ -1,4 +1,5 @@
 ﻿using OPP_back.Models.Data;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace OPP_back.Models.Dto
@@ -26,8 +27,10 @@ namespace OPP_back.Models.Dto
         public double PosY { get; set; }
 
         [JsonPropertyName("SubTasks")]
+        [MinLength(0)]
         public List<Guid> SubTasks { get; set; }
         [JsonPropertyName("AssignedTasks")]
+        [MinLength(0)]
         public List<Guid> AssignedTasks { get; set; }
     }
 }

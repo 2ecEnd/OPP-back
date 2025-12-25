@@ -1,4 +1,5 @@
 ﻿using OPP_back.Models.Data;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace OPP_back.Models.Dto
@@ -13,6 +14,7 @@ namespace OPP_back.Models.Dto
         [JsonPropertyName("TeamId")]
         public Guid? TeamId { get; set; }
         [JsonPropertyName("Tasks")]
+        [MinLength(0)]
         public List<TaskDto> Tasks { get; set; }
     }
 }
