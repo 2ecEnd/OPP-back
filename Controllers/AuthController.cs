@@ -91,7 +91,7 @@ namespace OPP_back.Controllers
         public async Task<IActionResult> ChangeUser([FromBody] UserDto user)
         {
             if (!await _UserService.ChangeUser(user))
-                return Unauthorized();
+                return Unauthorized(user.Id);
 
             return Ok();
         }
