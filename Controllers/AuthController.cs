@@ -27,12 +27,12 @@ namespace OPP_back.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var id = await _AuthService.RegisterUser(registerData.Email, registerData.Password);
+            var tokens = await _AuthService.RegisterUser(registerData.Email, registerData.Password);
 
-            if (id == null)
+            if (tokens == null)
                 return Conflict();
 
-            return Created();
+            return Created("", tokens);
         }
 
         [HttpPost("login")]

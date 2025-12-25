@@ -27,7 +27,7 @@ namespace OPP_back.Services
             _TokenService = TokenService;
         }
 
-        public async Task<Guid?> RegisterUser(string email, string password)
+        public async Task<TokensResponseDto?> RegisterUser(string email, string password)
         {
             if (await _DbContext.Users.AnyAsync(u => u.Email == email))
                 return null;
@@ -44,7 +44,9 @@ namespace OPP_back.Services
             await _DbContext.Users.AddAsync(user);
             await _DbContext.SaveChangesAsync();
 
-            return user.Id;
+            var tokens = GenerateTokens(user);
+
+            return tokens;
         }
 
         public async Task<TokensResponseDto?> LoginUser(string email, string password)
