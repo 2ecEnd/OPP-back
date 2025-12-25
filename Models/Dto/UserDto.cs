@@ -10,9 +10,9 @@ namespace OPP_back.Models.Dto
         public Guid Id { get; set; }
         [JsonPropertyName("Subjects")]
         [MinLength(0)]
-        public List<SubjectDto> Subjects { get; set; }
+        public List<SubjectDto>? Subjects { get; set; }
         [JsonPropertyName("Teams")]
         [MinLength(0)]
-        public List<TeamDto> Teams { get; set; }
+        public List<TeamDto>? Teams { get; set; }
     }
 }

@@ -13,9 +13,9 @@ namespace OPP_back.Models.Dto
 
         [JsonPropertyName("Subjects")]
         [MinLength(0)]
-        public List<Guid> Subjects { get; set; }
+        public List<Guid>? Subjects { get; set; }
         [JsonPropertyName("Members")]
         [MinLength(0)]
-        public List<MemberDto> Members { get; set; }
+        public List<MemberDto>? Members { get; set; }
     }
 }

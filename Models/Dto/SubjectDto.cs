@@ -15,6 +15,6 @@ namespace OPP_back.Models.Dto
         public Guid? TeamId { get; set; }
         [JsonPropertyName("Tasks")]
         [MinLength(0)]
-        public List<TaskDto> Tasks { get; set; }
+        public List<TaskDto>? Tasks { get; set; }
     }
 }
