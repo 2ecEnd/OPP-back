@@ -1,0 +1,205 @@
+﻿using Microsoft.EntityFrameworkCore;
+using OPP_back.Models.Data;
+using OPP_back.Models.Dto;
+
+namespace OPP_back.Services.Interfaces
+{
+    public class UserService : IUserService
+    {
+        private readonly AppDbContext _DbContext;
+
+        public UserService(AppDbContext DbContext)
+        {
+            _DbContext = DbContext;
+        }
+
+        public async Task<UserDto?> GetUser(Guid id)
+        {
+            var user = await _DbContext.Users
+                .Include(u => u.Subjects)
+                    .ThenInclude(s => s.Tasks)
+                        .ThenInclude(tk => tk.AssignedTasks)
+                .Include(u => u.Teams)
+                    .ThenInclude(tm => tm.Members)
+                        .ThenInclude(m => m.AssignedTasks)
+                .Select(u => new UserDto
+                {
+                    Id = u.Id,
+                    Subjects = u.Subjects.Select(s => new SubjectDto
+                    {
+                        Id = s.Id,
+                        Name = s.Name,
+                        TeamId = s.TeamId,
+                        Tasks = s.Tasks.Select(t => new TaskDto
+                        {
+                            Id = t.Id,
+                            Title = t.Title,
+                            Description = t.Description,
+                            CreateTime = t.CreateTime,
+                            DeadLine = t.DeadLine,
+                            LeadTime = t.LeadTime,
+                            Status = t.Status.ToString(),
+                            PosX = t.PosX,
+                            PosY = t.PosY,
+                            SubTasks = t.SubTasks.Select(st => st.Id).ToList(),
+                            AssignedTasks = t.AssignedTasks.Select(at => at.MemberId).ToList()
+                        }).ToList()
+                    }).ToList(),
+                    Teams = u.Teams.Select(tm => new TeamDto
+                    {
+                        Id = tm.Id,
+                        Name = tm.Name,
+                        Subjects = u.Subjects.Select(s => s.Id).ToList(),
+                        Members = tm.Members.Select(m => new MemberDto
+                        {
+                            Id = m.Id,
+                            Name = m.Name,
+                            Surname = m.Surname,
+                            Email = m.Email,
+                            Specialization = m.Specialization,
+                            AssignedTasks = m.AssignedTasks.Select(at => at.TaskId).ToList(),
+                        }).ToList()
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync(u => u.Id == id);
+
+            return user;
+        }
+
+        public async Task<bool> ChangeUser(UserDto data)
+        {
+            var user = await _DbContext.Users
+                .Include(u => u.Subjects)
+                    .ThenInclude(s => s.Tasks)
+                        .ThenInclude(tk => tk.AssignedTasks)
+                .Include(u => u.Teams)
+                    .ThenInclude(tm => tm.Members)
+                        .ThenInclude(m => m.AssignedTasks)
+                .FirstOrDefaultAsync(u => u.Id == data.Id);
+            if (user == null)
+                return false;
+
+            _DbContext.Subjects.RemoveRange(user.Subjects);
+            _DbContext.Teams.RemoveRange(user.Teams);
+            user.Teams = new List<Team>();
+            user.Subjects = new List<Subject>();
+            await _DbContext.SaveChangesAsync();
+
+            var teams = DtoToData_Teams(data.Teams, user);
+            var subjects = DtoToData_Subjects(data.Subjects, teams, user);
+            var assignedTasks = DtoToData_AssignedTasks(data.Teams, teams, subjects);
+
+            user.Teams = teams;
+            await _DbContext.Teams.AddRangeAsync(teams);
+
+            user.Subjects = subjects;
+            await _DbContext.Subjects.AddRangeAsync(subjects);
+
+            await _DbContext.AssignedTasks.AddRangeAsync(assignedTasks);
+            await _DbContext.SaveChangesAsync();
+
+            return true;
+        }
+
+        private List<Team> DtoToData_Teams(List<TeamDto> teamsDto, User user)
+        {
+            var teams = teamsDto.Select(tm => new Team
+            {
+                Id = tm.Id,
+                Name = tm.Name,
+                UserId = user.Id,
+                User = user,
+                Subjects = new List<Subject>(),
+                Members = new List<Member>()
+            }).ToList();
+
+            for (int i = 0; i < teamsDto.Count; i++)
+            {
+                teams[i].Members.AddRange(teamsDto[i].Members.Select(m => new Member
+                {
+                    Id = m.Id,
+                    Name = m.Name,
+                    Surname = m.Surname,
+                    Email = m.Email,
+                    Specialization = m.Specialization,
+                    TeamId = teams[i].Id,
+                    Team = teams[i],
+                    AssignedTasks = new List<AssignedTask>()
+                }));
+            }
+
+            return teams;
+        }
+
+        private List<Subject> DtoToData_Subjects(List<SubjectDto> subjectsDto, List<Team> teams, User user)
+        {
+            var subjects = subjectsDto.Select(s => new Subject
+            {
+                Id = s.Id,
+                Name = s.Name,
+                TeamId = s.TeamId,
+                Team = teams.FirstOrDefault(t => t.Id == s.TeamId),
+                UserId = user.Id,
+                User = user,
+                Tasks = new List<Models.Data.Task>()
+            }).ToList();
+
+            for (int i = 0; i < subjectsDto.Count; i++)
+            {
+                subjects[i].Tasks.AddRange(subjectsDto[i].Tasks.Select(t => new Models.Data.Task
+                {
+                    Id = t.Id,
+                    Title = t.Title,
+                    Description = t.Description,
+                    CreateTime = t.CreateTime,
+                    DeadLine = t.DeadLine,
+                    LeadTime = t.LeadTime,
+                    Status = t.Status.ToLower() == "done" ?
+                        Status.Done :
+                        t.Status.ToLower() == "inprocess" ?
+                            Status.InProcess :
+                            Status.DontStarted,
+                    PosX = t.PosX,
+                    PosY = t.PosY,
+                    SubTasks = new List<Models.Data.Task>(),
+                    AssignedTasks = new List<AssignedTask>()
+                }));
+
+                for (int j = 0; j < subjects[i].Tasks.Count; j++)
+                {
+                    var task = subjects[i].Tasks[j];
+
+                    for (int k = 0; k < subjectsDto[i].Tasks[j].SubTasks.Count; k++)
+                    {
+                        var taskDto = subjectsDto[i].Tasks[j].SubTasks[k];
+
+                        task.SubTasks.Add(subjects[i].Tasks.First(tk => tk.Id == taskDto));
+                    }
+                }
+            }
+
+            return subjects;
+        }
+
+        private List<AssignedTask> DtoToData_AssignedTasks(List<TeamDto> teamsDto, List<Team> teams, List<Subject> subjects)
+        {
+            var assignedTasks = new List<AssignedTask>();
+
+            for (int i = 0; i < teamsDto.Count; i++)
+                for (int j = 0; j < teamsDto[i].Members.Count; j++)
+                {
+                    var memberDto = teamsDto[i].Members[j];
+
+                    assignedTasks.AddRange(memberDto.AssignedTasks.Select(at => new AssignedTask
+                    {
+                        MemberId = memberDto.Id,
+                        Member = teams[i].Members.First(m => m.Id == memberDto.Id),
+                        TaskId = at,
+                        Task = subjects[i].Tasks.First(tk => tk.Id == at)
+                    }));
+                }
+
+            return assignedTasks;
+        }
+    }
+}

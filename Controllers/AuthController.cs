@@ -13,10 +13,12 @@ namespace OPP_back.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _AuthService;
+        private readonly IUserService _UserService;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IUserService userService)
         {
             _AuthService = authService;
+            _UserService = userService;
         }
 
         [HttpPost("register")]
@@ -65,6 +67,8 @@ namespace OPP_back.Controllers
             return Unauthorized();
         }
 
+
+
         [HttpGet("me")]
         public async Task<IActionResult> GetUser()
         {
@@ -75,7 +79,7 @@ namespace OPP_back.Controllers
             if (!Guid.TryParse(sessionClaim.Value, out var userId))
                 return Unauthorized();
 
-            var user = await _AuthService.GetUser(userId);
+            var user = await _UserService.GetUser(userId);
             if (user == null)
                 return Unauthorized();
 
@@ -86,15 +90,7 @@ namespace OPP_back.Controllers
         [EnableRateLimiting("RateLimit")]
         public async Task<IActionResult> ChangeUser([FromBody] UserDto user)
         {
-            var a = 10;
-            /*var sessionClaim = User.FindFirst("session");
-            if (sessionClaim == null)
-                return Unauthorized();*/
-
-            /*if (!Guid.TryParse(sessionClaim.Value, out var userId))
-                return Unauthorized();*/
-
-            if (!await _AuthService.ChangeUser(user))
+            if (!await _UserService.ChangeUser(user))
                 return Unauthorized();
 
             return Ok();
