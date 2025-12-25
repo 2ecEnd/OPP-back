@@ -19,6 +19,6 @@ namespace OPP_back.Models.Dto
 
         [JsonPropertyName("AssignedTasks")]
         [MinLength(0)]
-        public List<Guid>? AssignedTasks { get; set; }
+        public List<Guid> AssignedTasks { get; set; } = new List<Guid>();
     }
 }
