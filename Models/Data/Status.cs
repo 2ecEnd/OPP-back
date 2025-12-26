@@ -3,7 +3,7 @@
     public enum Status
     {
         Done,
-        InProcess,
-        DontStarted
+        InProgress,
+        NotAccepted
     }
 }

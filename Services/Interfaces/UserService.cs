@@ -38,7 +38,11 @@ namespace OPP_back.Services.Interfaces
                             CreateTime = t.CreateTime,
                             DeadLine = t.DeadLine,
                             LeadTime = t.LeadTime,
-                            Status = t.Status.ToString(),
+                            Status = t.Status == Status.Done ?
+                                        "Выполнено" : 
+                                        t.Status == Status.InProgress ?
+                                            "В процессе" :
+                                            "Не принято",
                             PosX = t.PosX,
                             PosY = t.PosY,
                             SubTasks = t.SubTasks.Select(st => st.Id).ToList(),
@@ -154,11 +158,11 @@ namespace OPP_back.Services.Interfaces
                     CreateTime = t.CreateTime,
                     DeadLine = t.DeadLine,
                     LeadTime = t.LeadTime,
-                    Status = t.Status.ToLower() == "done" ?
+                    Status = t.Status.ToLower() == "выполнено" ?
                         Status.Done :
-                        t.Status.ToLower() == "inprocess" ?
-                            Status.InProcess :
-                            Status.DontStarted,
+                        t.Status.ToLower() == "в процессе" ?
+                            Status.InProgress :
+                            Status.NotAccepted,
                     PosX = t.PosX,
                     PosY = t.PosY,
                     SubTasks = new List<Models.Data.Task>(),
