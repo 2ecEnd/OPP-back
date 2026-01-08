@@ -53,7 +53,7 @@ namespace OPP_back.Services.Interfaces
                     {
                         Id = tm.Id,
                         Name = tm.Name,
-                        Subjects = u.Subjects.Select(s => s.Id).ToList(),
+                        Subjects = tm.Subjects.Select(s => s.Id).ToList(),
                         Members = tm.Members.Select(m => new MemberDto
                         {
                             Id = m.Id,
