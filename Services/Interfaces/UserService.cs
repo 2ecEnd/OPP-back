@@ -72,6 +72,9 @@ namespace OPP_back.Services.Interfaces
 
         public async Task<bool> ChangeUser(UserDto data)
         {
+
+            data.Subjects.ForEach(s => s.Tasks.ForEach(t => t.DeadLine = t.DeadLine?.ToUniversalTime()));
+
             var user = await _DbContext.Users
                 .Include(u => u.Subjects)
                     .ThenInclude(s => s.Tasks)
