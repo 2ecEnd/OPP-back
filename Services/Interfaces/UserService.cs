@@ -72,7 +72,6 @@ namespace OPP_back.Services.Interfaces
 
         public async Task<bool> ChangeUser(UserDto data)
         {
-
             data.Subjects.ForEach(s => s.Tasks.ForEach(t => t.DeadLine = t.DeadLine?.ToUniversalTime()));
 
             var user = await _DbContext.Users
@@ -86,15 +85,15 @@ namespace OPP_back.Services.Interfaces
             if (user == null)
                 return false;
 
+            var teams = DtoToData_Teams(data.Teams, user);
+            var subjects = DtoToData_Subjects(data.Subjects, teams, user);
+            var assignedTasks = DtoToData_AssignedTasks(data.Teams, teams, subjects);
+
             _DbContext.Subjects.RemoveRange(user.Subjects);
             _DbContext.Teams.RemoveRange(user.Teams);
             user.Teams = new List<Team>();
             user.Subjects = new List<Subject>();
             await _DbContext.SaveChangesAsync();
-
-            var teams = DtoToData_Teams(data.Teams, user);
-            var subjects = DtoToData_Subjects(data.Subjects, teams, user);
-            var assignedTasks = DtoToData_AssignedTasks(data.Teams, teams, subjects);
 
             user.Teams = teams;
             await _DbContext.Teams.AddRangeAsync(teams);
