@@ -25,6 +25,7 @@ namespace OPP_back.Services.Interfaces
                 .Select(u => new UserDto
                 {
                     Id = u.Id,
+                    Email = u.Email,
                     Subjects = u.Subjects.Select(s => new SubjectDto
                     {
                         Id = s.Id,

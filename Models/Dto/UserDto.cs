@@ -8,6 +8,8 @@ namespace OPP_back.Models.Dto
     {
         [JsonPropertyName("Id")]
         public Guid Id { get; set; }
+        [JsonPropertyName("Email")]
+        public string? Email { get; set; }
         [JsonPropertyName("Subjects")]
         [MinLength(0)]
         public List<SubjectDto> Subjects { get; set; } = new List<SubjectDto>();
